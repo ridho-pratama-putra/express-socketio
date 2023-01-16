@@ -4,7 +4,7 @@ const app = express();
 const http = require('http');
 const cors = require('cors');
 const {Server} = require('socket.io');
-const { writeFileSync } = require('fs');
+const {writeFileSync} = require('fs');
 
 app.use(cors()); // Add cors middleware
 const CHAT_BOT = 'ChatBot';
@@ -82,25 +82,28 @@ io.on('connection', (socket) => {
         const replyMessage = {
             username,
             room,
-            type: 'media'
+            type: 'media',
+            __createdtime__
         }
 
+        let fileName;
         try {
             const timeStamp = new Date().toISOString();
-            writeFileSync(process.cwd() + "/tmp/upload/" + username + "_"+ timeStamp + ".jpg", fileImage, (err) => {
+            fileName = username + "_" + timeStamp + ".jpg";
+            writeFileSync(process.cwd() + "/tmp/upload/" + fileName, fileImage, (err) => {
                 if (err) {
                     io.in(room).emit(RECEIVE_MESSAGE_EVENT, {...replyMessage, message: 'failed to upload ya'});
                 }
             });
-            io.in(room).emit(RECEIVE_MESSAGE_EVENT, {...replyMessage, message: 'success to upload ya'});
+            io.in(room).emit(RECEIVE_MESSAGE_EVENT, {...replyMessage, message: fileName});
         } catch (e) {
             console.log(e)
         }
         // Send to all users in room, including sender
 
-        // harperSaveMessage("fileImage", username, room, __createdtime__) // Save message in db
-        //     .then((response) => console.log(response))
-        //     .catch((err) => console.log(err));
+        harperSaveMessage(fileName, username, room, __createdtime__) // Save message in db
+            .then((response) => console.log(response))
+            .catch((err) => console.log(err));
     });
 
     // Allow Users to Send Messages to Each Other with Socket.io
@@ -141,8 +144,10 @@ io.on('connection', (socket) => {
     });
 });
 
-app.use("/", (req, res) => {
-   res.send("hello")
+app.use("/file", (req, res, next) => {
+    const file = process.cwd() + "/tmp/upload/" + req.query.filename;
+    res.download(file); // Set disposition and send it.
 });
+
 
 server.listen(4000, () => 'Server is running on port 4000');
