@@ -146,7 +146,7 @@ io.on('connection', (socket) => {
 
 app.use("/file", (req, res, next) => {
     const file = process.cwd() + "/tmp/upload/" + req.query.filename;
-    res.download(file); // Set disposition and send it.
+    res.sendFile(file); // Set disposition and send it.
 });
 
 
