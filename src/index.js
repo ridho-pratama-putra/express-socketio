@@ -4,6 +4,7 @@ const app = express();
 const http = require('http');
 const cors = require('cors');
 const {Server} = require('socket.io');
+const { writeFileSync } = require('fs');
 
 app.use(cors()); // Add cors middleware
 const CHAT_BOT = 'ChatBot';
@@ -78,8 +79,24 @@ io.on('connection', (socket) => {
     // Allow Users to Send images file to Each Other with Socket.io
     socket.on(SEND_IMAGES_EVENT, (data) => {
         const {fileImage, username, room, __createdtime__} = data;
-        const receiveMessageWithImage = {...data, type: 'media'};
-        io.in(room).emit(RECEIVE_MESSAGE_EVENT, receiveMessageWithImage); // Send to all users in room, including sender
+        const replyMessage = {
+            username,
+            room,
+            type: 'media'
+        }
+
+        try {
+            const timeStamp = new Date().toISOString();
+            writeFileSync(process.cwd() + "/tmp/upload/" + username + "_"+ timeStamp + ".jpg", fileImage, (err) => {
+                if (err) {
+                    io.in(room).emit(RECEIVE_MESSAGE_EVENT, {...replyMessage, message: 'failed to upload ya'});
+                }
+            });
+            io.in(room).emit(RECEIVE_MESSAGE_EVENT, {...replyMessage, message: 'success to upload ya'});
+        } catch (e) {
+            console.log(e)
+        }
+        // Send to all users in room, including sender
 
         // harperSaveMessage("fileImage", username, room, __createdtime__) // Save message in db
         //     .then((response) => console.log(response))
