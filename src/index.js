@@ -93,7 +93,7 @@ io.on('connection', (socket) => {
         }
         // Send to all users in room, including sender
 
-        harperSaveMessage(fileName, username, room, __createdtime__, ) // Save message in db
+        harperSaveMessage(fileName, username, room, __createdtime__, CONSTANT.MEDIA_MESSAGE_TYPE) // Save message in db
             .then((response) => console.log(response))
             .catch((err) => console.log(err));
     });
@@ -103,7 +103,7 @@ io.on('connection', (socket) => {
         const {message, username, room, __createdtime__} = data;
         const receiveMessageEvent = {...data, type: 'text',}
         io.in(room).emit(CONSTANT.RECEIVE_MESSAGE_EVENT, receiveMessageEvent); // Send to all users in room, including sender
-        harperSaveMessage(message, username, room, __createdtime__) // Save message in db
+        harperSaveMessage(message, username, room, __createdtime__, CONSTANT.TEXT_MESSAGE_TYPE) // Save message in db
             .then((response) => console.log(response))
             .catch((err) => console.log(err));
     });

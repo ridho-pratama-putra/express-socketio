@@ -14,6 +14,7 @@ function harperSaveMessage(message, username, room, type) {
                 message,
                 username,
                 room,
+                type
             },
         ],
     });

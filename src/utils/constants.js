@@ -8,6 +8,8 @@ const CONSTANT = {
     CHAT_ROOM_USERS_EVENT: 'chatroom_users',
     DISCONNECT_EVENT: 'disconnect',
     LAST_100_MESSAGES_EVENT: 'last_100_messages',
+    MEDIA_MESSAGE_TYPE: 'media',
+    TEXT_MESSAGE_TYPE: 'text',
 }
 
 export default CONSTANT;
