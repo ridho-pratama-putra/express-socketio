@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-function harperSaveMessage(message, username, room, type) {
+function harperSaveMessage(message, username, room, message_type) {
     const dbUrl = process.env.HARPERDB_URL;
     const dbPw = process.env.HARPERDB_PW;
     if (!dbUrl || !dbPw) return null;
@@ -14,10 +14,11 @@ function harperSaveMessage(message, username, room, type) {
                 message,
                 username,
                 room,
-                type
+                message_type
             },
         ],
     });
+    console.log(data)
 
     let config = {
         method: 'post',

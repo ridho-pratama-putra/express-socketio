@@ -12,4 +12,4 @@ const CONSTANT = {
     TEXT_MESSAGE_TYPE: 'text',
 }
 
-export default CONSTANT;
+module.exports = CONSTANT;

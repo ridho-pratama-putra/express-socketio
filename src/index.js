@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
         // Send message to all users currently in the room, apart from the user that just joined
         socket.to(room).emit(CONSTANT.RECEIVE_MESSAGE_EVENT, {
             message: `${username} has joined the chat room`,
-            username: CHAT_BOT,
+            username: CONSTANT.CHAT_BOT,
             type: 'text',
             __createdtime__,
         });
@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
         // Send welcome msg only to user that just joined chat
         socket.emit(CONSTANT.RECEIVE_MESSAGE_EVENT, {
             message: `Welcome ${username}`,
-            username: CHAT_BOT,
+            username: CONSTANT.CHAT_BOT,
             __createdtime__,
             type: 'text',
         });
@@ -87,13 +87,12 @@ io.on('connection', (socket) => {
                     io.in(room).emit(CONSTANT.RECEIVE_MESSAGE_EVENT, {...replyMessage, message: 'failed to upload ya'});
                 }
             });
+            // Send to all users in room, including sender
             io.in(room).emit(CONSTANT.RECEIVE_MESSAGE_EVENT, {...replyMessage, message: fileName});
         } catch (e) {
             console.log(e)
         }
-        // Send to all users in room, including sender
-
-        harperSaveMessage(fileName, username, room, __createdtime__, CONSTANT.MEDIA_MESSAGE_TYPE) // Save message in db
+        harperSaveMessage(fileName, username, room, "media") // Save message in db
             .then((response) => console.log(response))
             .catch((err) => console.log(err));
     });
@@ -103,7 +102,7 @@ io.on('connection', (socket) => {
         const {message, username, room, __createdtime__} = data;
         const receiveMessageEvent = {...data, type: 'text',}
         io.in(room).emit(CONSTANT.RECEIVE_MESSAGE_EVENT, receiveMessageEvent); // Send to all users in room, including sender
-        harperSaveMessage(message, username, room, __createdtime__, CONSTANT.TEXT_MESSAGE_TYPE) // Save message in db
+        harperSaveMessage(message, username, room, "text") // Save message in db
             .then((response) => console.log(response))
             .catch((err) => console.log(err));
     });
@@ -116,7 +115,7 @@ io.on('connection', (socket) => {
         allUsers = leaveRoom(socket.id, allUsers);
         socket.to(room).emit(CONSTANT.CHAT_ROOM_USERS_EVENT, allUsers);
         socket.to(room).emit(CONSTANT.RECEIVE_MESSAGE_EVENT, {
-            username: CHAT_BOT,
+            username: CONSTANT.CHAT_BOT,
             message: `${username} has left the chat`,
             __createdtime__,
             type: 'text',
